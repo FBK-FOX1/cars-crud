@@ -38,15 +38,13 @@ def test_user_edits_car_and_change_survives_reload(page, live_server):
     # 5. 强制等待 URL 跳转到详情页
     page.wait_for_url(re.compile(r"/cars/\d+$"))
 
-    # 6. 关键修改：等待网络请求结束（确保页面已经拿到了从API返回的数据）
-    page.wait_for_load_state("networkidle")
-
-    # 7. 断言详情页标题变成了 Honda Accord（使用更精准的 #car-title 定位器，把超时延长到30秒）
+    # 6. 关键修改：直接等待 #car-title 元素的文本变成 Honda Accord
+    # 注意：这里不再用 get_by_role("heading")，而是用 id 定位器，且超时时间延长到 30000 毫秒（30秒）
     expect(page.locator("#car-title")).to_have_text("Honda Accord", timeout=30000)
 
-    # 8. 刷新页面 (Reload)
+    # 7. 刷新页面 (Reload)
     page.reload()
 
-    # 9. 断言刷新后，页面显示的内容依然是修改后的 Accord 和 2023（同样延长超时时间）
+    # 8. 断言刷新后，页面显示的内容依然是修改后的 Accord 和 2023
     expect(page.locator("#car-model")).to_have_text("Accord", timeout=30000)
     expect(page.locator("#car-year")).to_have_text("2023", timeout=30000)
