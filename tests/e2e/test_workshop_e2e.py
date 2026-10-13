@@ -15,7 +15,7 @@ def test_user_creates_car_in_browser(page, live_server):
 
 
 def test_user_edits_car_and_change_survives_reload(page, live_server):
-    # 1. 创建一辆 Honda Civic (2022)
+    # 1. 创建 Honda Civic (2022)
     page.goto(f"{live_server}/cars/new")
     page.get_by_label("Make", exact=True).fill("Honda")
     page.get_by_label("Model", exact=True).fill("Civic")
@@ -35,12 +35,15 @@ def test_user_edits_car_and_change_survives_reload(page, live_server):
     # 4. 点击 Save changes 按钮保存
     page.get_by_role("button", name="Save changes").click()
 
-    # 5. 断言详情页标题变成了 Honda Accord
+    # 5. 强制等待 URL 跳转到详情页（解决 GitHub Actions 环境下渲染慢导致的超时）
+    page.wait_for_url(re.compile(r"/cars/\d+$"))
+
+    # 6. 断言详情页标题变成了 Honda Accord
     expect(page.get_by_role("heading", name="Honda Accord")).to_be_visible(timeout=15000)
 
-    # 6. 刷新页面 (Reload)
+    # 7. 刷新页面 (Reload)
     page.reload()
 
-    # 7. 断言刷新后，页面显示的内容依然是修改后的 Accord 和 2023
+    # 8. 断言刷新后，页面显示的内容依然是修改后的 Accord 和 2023
     expect(page.locator("#car-model")).to_have_text("Accord")
     expect(page.locator("#car-year")).to_have_text("2023")
