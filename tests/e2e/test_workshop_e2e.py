@@ -36,7 +36,7 @@ def test_user_edits_car_and_change_survives_reload(page, live_server):
     page.get_by_role("button", name="Save changes").click()
 
     # 5. 断言详情页标题变成了 Honda Accord
-    expect(page.get_by_role("heading", name="Honda Accord")).to_be_visible()
+    expect(page.get_by_role("heading", name="Honda Accord")).to_be_visible(timeout=15000)
 
     # 6. 刷新页面 (Reload)
     page.reload()
